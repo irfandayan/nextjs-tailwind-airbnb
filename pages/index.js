@@ -1,8 +1,12 @@
 import Head from "next/head";
 import Banner from "../components/Banner";
+import Footer from "../components/Footer";
 import Header from "../components/Header";
+import LargeCard from "../components/LargeCard";
+import MediumCard from "../components/MediumCard";
+import SmallCard from "../components/SmallCard";
 
-export default function Home() {
+export default function Home({ exploreData, cardsData }) {
   return (
     <div className="">
       <Head>
@@ -17,8 +21,51 @@ export default function Home() {
       <main className="mx-auto max-w-7xl px-8 sm:px-16">
         <section className="pt-6">
           <h2 className="pb-5 text-4xl font-semibold">Explore Nearby</h2>
+          {/* Pull some date from a server - API endpoints */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {exploreData?.map(({ img, location, distance }) => (
+              <SmallCard
+                image={img}
+                location={location}
+                distance={distance}
+                key={img}
+              />
+            ))}
+          </div>
         </section>
+        <section>
+          <h2 className="py-8 text-4xl font-semibold">Live Anywhere</h2>
+          <div className="-ml-3 flex space-x-3 overflow-scroll p-3 scrollbar-hide">
+            {cardsData?.map(({ img, title }) => (
+              <MediumCard image={img} title={title} key={img} />
+            ))}
+          </div>
+        </section>
+        <LargeCard
+          image="/assets/large-card.webp"
+          title="The Greatest Outdoors"
+          description="Whishlist curated by Airbab"
+          buttonText="Get Inspired"
+        />
       </main>
+      <Footer />
     </div>
   );
+}
+
+export async function getStaticProps() {
+  const exploreData = await fetch("https://www.jsonkeeper.com/b/ROCW").then(
+    (res) => res.json()
+  );
+
+  const cardsData = await fetch("https://www.jsonkeeper.com/b/VHHT").then(
+    (res) => res.json()
+  );
+
+  return {
+    props: {
+      exploreData,
+      cardsData,
+    },
+  };
 }
